@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Referensi kode — Cakrawala</title>
+<style>
+  :root { --bg:#0f1117; --panel:#171a23; --panel2:#1e2230; --text:#e8eaf0; --muted:#9aa1b2; --accent:#6ea8fe; --good:#4ade80; --border:#2a2f3d; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); line-height:1.6;
+         font-family:-apple-system,"Segoe UI",Roboto,sans-serif; }
+  main { max-width:820px; margin:0 auto; padding:38px 24px 70px; }
+  h1 { font-size:26px; margin:0 0 6px; }
+  .lead { color:var(--muted); margin:0 0 30px; }
+  h2 { font-size:16px; margin:32px 0 12px; border-bottom:1px solid var(--border); padding-bottom:7px; }
+  a.card { display:block; background:var(--panel); border:1px solid var(--border); border-radius:10px;
+           padding:14px 16px; margin:9px 0; text-decoration:none; color:var(--text); }
+  a.card:hover { border-color:var(--accent); }
+  a.card .t { font-weight:600; }
+  a.card .d { color:var(--muted); font-size:13.5px; margin-top:3px; }
+  a.card .u { color:var(--accent); font-size:12px; margin-top:6px; font-family:"SF Mono",Menlo,monospace; word-break:break-all; }
+  .tag { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; font-weight:700;
+         background:rgba(110,168,254,.15); color:var(--accent); margin-left:6px; vertical-align:1px; }
+  .tag.mute { background:rgba(154,161,178,.14); color:var(--muted); }
+  footer { color:var(--muted); font-size:13px; margin-top:38px; border-top:1px solid var(--border); padding-top:16px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Referensi kode — Cakrawala</h1>
+  <p class="lead">Semua isinya <b>contoh, bukan kunci jawaban</b> — tugas dinilai dari kode mahasiswa sendiri.
+     Demo HTML bisa dibuka langsung di browser; berkas <code>.md</code> dibaca lewat GitHub.</p>
+
+  <h2>Web Application Development (CIK3101) — Sesi 5</h2>
+
+  <a class="card" href="wad/sesi05/02-index-as-key.html">
+    <div class="t">Demo hidup — <code>:key="index"</code> vs <code>:key="item.id"</code> <span class="tag">dibuka di sini</span></div>
+    <div class="d">Centang baris kedua, ketik catatan, lalu filter sampai baris itu keluar dari daftar.
+       Node Vue dipakai ulang pada posisi yang salah — lihat apa yang tertinggal. Butuh internet sekali (Vue dari CDN).</div>
+    <div class="u">wad/sesi05/02-index-as-key.html</div>
+  </a>
+
+  <a class="card" href="https://github.com/pramudityad/cakrawala-referensi/blob/main/wad/sesi05/01-kegagalan-klasik.md">
+    <div class="t">Lima kegagalan klasik port Vue <span class="tag mute">tambahan</span></div>
+    <div class="d">Lupa <code>.value</code> · ubah <code>props</code> langsung / destructure <code>reactive()</code> ·
+       <code>defineEmits</code> belum ada · <code>watch</code> tanpa cleanup · <code>v-html</code> untuk data dari luar.
+       Tiap potongan: kode salah → gejala → akar → versi benar.</div>
+    <div class="u">wad/sesi05/01-kegagalan-klasik.md</div>
+  </a>
+
+  <a class="card" href="https://github.com/pramudityad/cakrawala-referensi/blob/main/wad/sesi05/03-stasiun-react.md">
+    <div class="t">Empat stasiun gallery walk (React admin produksi) <span class="tag mute">tambahan</span></div>
+    <div class="d">Ringkasan empat halaman: Service Overview, State Management, Forms &amp; Validation, Component System.
+       Cukup untuk memilih satu keputusan dan memberi sticky 🟢 kita lakukan / 🟡 kita tunda / 🔴 kita tolak.</div>
+    <div class="u">wad/sesi05/03-stasiun-react.md</div>
+  </a>
+
+  <footer>
+    Materi kuliah: Damar Arba Pramuditya · Universitas Cakrawala.<br>
+    Dokumen arsitektur produksi di berkas stasiun React sudah disanitasi — nama perusahaan disamarkan,
+    host internal diganti, berkas penuh tidak dibagikan.
+  </footer>
+</main>
+</body>
+</html>
