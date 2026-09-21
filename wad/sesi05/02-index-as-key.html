@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Referensi Sesi 5 No 2 — index-as-key forensics</title>
+<style>
+  :root { --bg:#0f1117; --panel:#171a23; --panel2:#1e2230; --text:#e8eaf0; --muted:#9aa1b2;
+          --accent:#6ea8fe; --good:#4ade80; --bad:#f87171; --warn:#fbbf24; --border:#2a2f3d; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); line-height:1.5;
+         font-family:-apple-system,"Segoe UI",Roboto,sans-serif; }
+  header { padding:18px 26px; border-bottom:1px solid var(--border); }
+  header h1 { margin:0 0 4px; font-size:19px; }
+  header p { margin:0; color:var(--muted); font-size:13px; }
+  main { max-width:900px; margin:0 auto; padding:20px 26px 60px; }
+  .panel { background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:18px; margin-bottom:16px; }
+  .modebar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+  button { background:var(--panel2); color:var(--text); border:1px solid var(--border);
+           padding:9px 15px; border-radius:8px; font-size:13px; cursor:pointer; font-weight:600; }
+  button.on { border-color:var(--accent); color:var(--accent); }
+  button.bad.on { border-color:var(--bad); color:var(--bad); }
+  .hint { font-size:13px; color:var(--muted); margin:0 0 14px; }
+  .hint code { color:var(--text); }
+  input[type=search] { background:#0b0d12; border:1px solid var(--border); color:var(--text);
+           padding:9px 11px; border-radius:7px; font-size:14px; width:100%; margin-bottom:12px; }
+  .row { display:flex; align-items:center; gap:10px; background:var(--panel2);
+         border:1px solid var(--border); border-radius:8px; padding:9px 12px; margin:6px 0; }
+  .row .name { flex:1 0 150px; font-weight:600; }
+  .row .meta { color:var(--muted); font-size:12px; flex:0 0 90px; }
+  .row input[type=text] { flex:1 1 160px; background:#0b0d12; border:1px solid var(--border);
+         color:var(--text); border-radius:6px; padding:6px 9px; font-size:13px; }
+  .keys { font-family:"SF Mono",Menlo,Consolas,monospace; font-size:13px; color:var(--muted); margin-top:14px; white-space:pre-wrap; }
+  .warnbox { border-left:3px solid var(--warn); padding:8px 0 8px 12px; color:var(--muted); font-size:13px; }
+  .badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; font-weight:700; }
+  .badge.bad { background:rgba(248,113,113,.15); color:var(--bad); }
+  .badge.good { background:rgba(74,222,128,.15); color:var(--good); }
+  ol { padding-left:20px; font-size:13.5px; color:var(--muted); }
+  ol li { margin:5px 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Forensik key — <code>:key="index"</code> vs <code>:key="item.id"</code></h1>
+  <p>Referensi Tugas Sesi 5 nomor 2. Checkbox dan kotak catatan di bawah <b>tidak dikelola Vue</b> — sengaja.</p>
+</header>
+
+<main id="app">
+  <div class="panel">
+    <div class="modebar">
+      <button :class="{on: form==='benar', good:true}" @click="form='benar'">:key="item.id" — BENAR</button>
+      <button :class="{on: form==='salah', bad:true}" @click="form='salah'">:key="index" — SALAH</button>
+    </div>
+    <p class="hint">
+      Sekarang: <b>1.</b> centang baris kedua dan ketik sesuatu di kotak catatannya ·
+      <b>2.</b> ketik kata filter sampai baris itu <b>keluar</b> dari daftar ·
+      <b>3.</b> lihat apakah centang &amp; tulisannya ikut pindah atau tertinggal di posisinya.
+    </p>
+
+    <input type="search" v-model="q" placeholder="filter nama (mis. ketik: kopi)">
+
+    <div v-for="(item, i) in filtered" :key="form==='benar' ? item.id : i" class="row">
+      <input type="checkbox">
+      <span class="name">{{ item.nama }}</span>
+      <span class="meta">{{ item.kategori }}</span>
+      <input type="text" placeholder="catatan…">
+    </div>
+    <p v-if="filtered.length === 0" class="hint">Tidak ada baris yang cocok.</p>
+
+    <p class="keys">:key yang dipakai sekarang → {{ form==='benar' ? 'item.id  (stabil, mengikuti item)' : 'index    (posisi, bukan identitas)' }}
+baris tampil: {{ filtered.length }} dari {{ items.length }}</p>
+  </div>
+
+  <div class="panel">
+    <p style="margin:0 0 4px"><span class="badge bad">SALAH</span> <code>:key="index"</code></p>
+    <p class="hint">Vue memakai ulang node DOM pada posisi yang sama. Node punya state yang
+       <b>tidak dikelola Vue</b> (checked, teks yang kamu ketik) — jadi state itu tertinggal di posisinya,
+       lalu menempel ke item yang berbeda. Persis seperti centang yang berpindah ke baris salah.</p>
+    <p style="margin:0"><span class="badge good">BENAR</span> <code>:key="item.id"</code></p>
+    <p class="hint">Key adalah kontrak identitas. Vue memindahkan node (beserta seluruh state DOM-nya)
+       mengikuti item; kalau item difilter keluar, node-nya ikut hilang bersama centangannya.</p>
+    <div class="warnbox">
+      Kalau kamu memakai <code>v-model</code> pada checkbox, bug ini <b>tertutup</b> — Vue ikut
+      memperbarui properti <code>checked</code>, jadi yang salah kelihatan "benar". Itulah sebabnya demo ini
+      memakai checkbox tanpa <code>v-model</code>: supaya yang kamu lihat adalah mekanisme reuse-nya, bukan
+      tambalan Vue di atasnya. Kalau kamu ingin mereproduksi di proyek timmu, pakai elemen yang state-nya
+      tidak dikelola Vue — atau perhatikan input yang sedang fokus saat list di-render ulang.
+    </div>
+  </div>
+
+  <div class="panel">
+    <p class="hint" style="margin:0 0 6px"><b>Yang harus kamu kumpulkan (bukan dari halaman ini):</b></p>
+    <ol>
+      <li>Branch di repo timmu — mis. <code>bug/index-as-key</code>.</li>
+      <li>Screenshot sebelum/sesudah atau rekaman 20 detik, dari <b>komponen timmu</b>.</li>
+      <li>Diff 2 baris: <code>:key</code> lama vs baru.</li>
+      <li>≤100 kata: kenapa Vue memakai ulang node itu, dan kenapa <code>item.id</code> memperbaikinya.</li>
+      <li>Jangan merge ke <code>main</code>.</li>
+    </ol>
+  </div>
+</main>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script>
+const { createApp, ref, computed } = Vue
+createApp({
+  setup() {
+    const form = ref('benar')
+    const q = ref('')
+    const items = ref([
+      { id: 31, nama: 'Kopi Susu Gula Aren', kategori: 'minuman' },
+      { id: 32, nama: 'Es Teh Manis',        kategori: 'minuman' },
+      { id: 33, nama: 'Nasi Goreng Kampung', kategori: 'makanan' },
+      { id: 34, nama: 'Kopi Tubruk',         kategori: 'minuman' },
+      { id: 35, nama: 'Pisang Goreng',       kategori: 'makanan' },
+      { id: 36, nama: 'Kopi Latte',          kategori: 'minuman' }
+    ])
+    const filtered = computed(() =>
+      items.value.filter(i => i.nama.toLowerCase().includes(q.value.toLowerCase())))
+    return { form, q, items, filtered }
+  }
+}).mount('#app')
+</script>
+</body>
+</html>
